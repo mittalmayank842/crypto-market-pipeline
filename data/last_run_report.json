@@ -1,0 +1,30 @@
+{
+  "run": "20261028T165435Z",
+  "bronze": {
+    "markets": 50,
+    "price_history": 8967,
+    "ohlc": 8973,
+    "global": 1,
+    "trending": 15,
+    "_seconds": 8.5
+  },
+  "silver": {
+    "daily_prices": 8917,
+    "quarantined_prices": 0,
+    "candles": 8973,
+    "quarantined_candles": 0,
+    "coins": 50,
+    "_seconds": 9.2
+  },
+  "gold": {
+    "daily_metrics": 8917,
+    "candle_signals": 8973,
+    "_seconds": 3.8
+  },
+  "platinum": {
+    "coin_scorecard": 50,
+    "movers": 10,
+    "pattern_counts": 50,
+    "_seconds": 9.4
+  }
+}
