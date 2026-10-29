@@ -1,0 +1,47 @@
+name: Daily pipeline run
+on:
+  schedule:
+    - cron: "30 3 * * *"   # 09:00 IST every day
+  workflow_dispatch:
+    inputs:
+      top:
+        description: "How many coins to fetch"
+        default: "50"
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: {group: daily-run, cancel-in-progress: false}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TOP: ${{ github.event.inputs.top || '50' }}
+      COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: "17"}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt
+      - name: Ingest and process (landing -> platinum)
+        run: PYTHONPATH=src python -m crypto_pipeline.pipeline --top "$TOP"
+      - name: Data quality gate
+        run: PYTHONPATH=src python -m crypto_pipeline.quality_gate "$TOP"
+      - name: Build dashboard
+        if: always()
+        run: PYTHONPATH=src python -m crypto_pipeline.dashboard
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: run-report, path: data/last_run_report.json}
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: site}
+  deploy:
+    needs: run
+    runs-on: ubuntu-latest
+    environment: {name: github-pages, url: "${{ steps.d.outputs.page_url }}"}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

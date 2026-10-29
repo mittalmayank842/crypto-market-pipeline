@@ -26,5 +26,30 @@
     "movers": 10,
     "pattern_counts": 50,
     "_seconds": 9.4
+  },
+  "quality_gate": {
+    "passed": true,
+    "rules": [
+      {
+        "rule": "coins_loaded",
+        "passed": true,
+        "value": "50 of 50"
+      },
+      {
+        "rule": "quarantine_rate",
+        "passed": true,
+        "value": "0.00%"
+      },
+      {
+        "rule": "rows_kept",
+        "passed": true,
+        "value": "99.4%"
+      },
+      {
+        "rule": "platinum_complete",
+        "passed": true,
+        "value": "50 scorecards / 50 coins"
+      }
+    ]
   }
 }

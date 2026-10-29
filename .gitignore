@@ -8,3 +8,4 @@ data/run.log
 spark-warehouse/
 metastore_db/
 derby.log
+site/

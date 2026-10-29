@@ -21,6 +21,28 @@ CoinGecko API ──► landing (raw JSON) ──► bronze ──► silver ─
 | Platinum | 50-coin scorecard, top-5 gainers/losers, pattern counts |
 | Spark time | ~31 s for bronze → platinum |
 
+## Runs in the cloud (CI/CD)
+
+[![CI](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/ci.yml)
+[![Daily pipeline run](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/daily-run.yml/badge.svg)](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/daily-run.yml)
+[![Docker image](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/docker.yml/badge.svg)](https://github.com/mittalmayank842/crypto-market-pipeline/actions/workflows/docker.yml)
+
+| Workflow | What it does |
+| --- | --- |
+| `ci.yml` | Every push and pull request: Java 17 + Python 3.11, runs the pytest suite |
+| `daily-run.yml` | Every day at 09:00 IST on a GitHub-hosted runner: fetches fresh CoinGecko data, runs bronze → platinum, applies the **data quality gate**, builds the dashboard and **deploys it to GitHub Pages** |
+| `docker.yml` | Every push to `main`: builds the image, runs the tests inside it, publishes to **GitHub Container Registry** (`ghcr.io/mittalmayank842/crypto-market-pipeline`) |
+
+**Live dashboard:** https://mittalmayank842.github.io/crypto-market-pipeline/ (run health, quality gate, movers, 50-coin scorecard; `data.json` for machines).
+
+**Monitoring:** `quality_gate.py` fails the run (and GitHub emails the owner) if fewer than 90% of coins load,
+more than 2% of rows are quarantined, silver keeps under 95% of bronze rows, or a coin has no scorecard.
+The run report is kept as a build artifact for every run.
+
+```bash
+docker run --rm ghcr.io/mittalmayank842/crypto-market-pipeline:latest   # fetch + process + gate + dashboard
+```
+
 ## Endpoints
 
 1. `/coins/markets` — top 50 coins by market cap
